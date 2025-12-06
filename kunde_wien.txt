@@ -1,0 +1,14 @@
+DATA PRIVACY AUDIT - CLIENT RECORD 2025
+------------------------------------------------
+Client Name: Hans Müller
+Address: Mariahilfer Straße 123, 1060 Wien, Austria
+Contact: +43 1 234 5678
+Private Email: hans.mueller@example.at
+
+Financial Details:
+Bank: Erste Bank Sparkasse
+IBAN: AT89 3704 0044 0532 0130
+
+Case Notes:
+Mr. Müller is currently employed at Siemens AG in Linz. 
+Meeting scheduled with Sarah Connor for next Tuesday.
