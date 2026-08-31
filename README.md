@@ -1,60 +1,80 @@
-# GDPR Guardian 🛡️
+# GDPR Guardian
 
-> **An automated Privacy Engineering tool designed for the DACH region to detect and anonymize Personal Identifiable Information (PII) in German texts.**
+> A Python proof of concept for finding and replacing selected identifiers in German-language text.
 
-![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
-![Compliance](https://img.shields.io/badge/Compliance-GDPR%2FDSGVO-orange)
-![NLP](https://img.shields.io/badge/AI-Spacy_German_Model-green)
+![Python](https://img.shields.io/badge/Python-3.11%2B-blue)
+![NLP](https://img.shields.io/badge/NLP-spaCy-green)
+![CI](https://github.com/osmankaankars/GDPR-Guardian/actions/workflows/ci.yml/badge.svg)
 
-## 📖 Overview
-In the era of strict data privacy regulations (**GDPR / DSGVO**), automated data minimization is essential.
+## Scope
 
-**GDPR Guardian** is a Python-based utility that leverages **Natural Language Processing (NLP)** and region-specific regex patterns to sanitize documents before they leave secure environments.  
-It is specifically engineered to handle **German language nuances** and **Austrian/German formats**.
+The prototype combines regular expressions with spaCy's small German model:
 
-## ✨ Key Features
-* **🇦🇹 Region-Specific Detection:** Accurate identification of Austrian IBANs (`AT...`) and Phone Numbers (`+43`).
-* **🧠 AI-Powered Named Entity Recognition:** Uses Spacy's `de_core_news_sm` model to detect German Names and Locations contextually.
-* **📄 Multi-Format Support:** Processes both plain text (`.txt`) and PDF documents (`.pdf`).
-* **🔒 Privacy by Design:** Implements pseudonymization placeholders (e.g., `[PERSON_GDPR]`) to maintain document structure while removing sensitive data.
+- Austrian IBANs in the supported `AT..` layout.
+- Phone-number patterns beginning with `+43`, `+49`, or `0`.
+- Email-address patterns.
+- Person (`PER`) and location (`LOC`) entities returned by `de_core_news_sm`.
+- Plain-text input and text extraction from PDFs.
 
-## ⚙️ Installation
+Matches are replaced with explicit placeholders such as `[EMAIL_REDACTED]`, `[PERSON_GDPR]`, and `[LOCATION_GDPR]`. PDF input is extracted and written as plain text; the project does not preserve PDF layout or create a redacted PDF document.
 
-1. **Clone the repository:**
+## Install
+
 ```bash
 git clone https://github.com/osmankaankars/GDPR-Guardian.git
 cd GDPR-Guardian
-```
-
-2. **Install dependencies:**
-```bash
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-3. **Download the German Language Model:**
+The pinned requirements include the `de_core_news_sm` model. If you install spaCy separately, install the model with:
+
 ```bash
 python -m spacy download de_core_news_sm
 ```
 
-## 🚀 Usage
-Run the tool via command line by passing the target file:
+## Use
 
 ```bash
 python anonymizer.py kunde_wien.txt
 ```
 
-### Example Input:
-```
+`kunde_wien.txt` is a synthetic fixture for local demonstration.
+
+For text input, the result is written to `redacted_<input-name>`. For PDF input, extracted and redacted text is written to `redacted_<input-stem>.txt`.
+
+Example input:
+
+```text
 Client: Hans Müller, Location: Wien, IBAN: AT89 3704 0044 0532 0130
 ```
 
-### Example Output:
-```
+Possible output, depending on the NLP model's entity detection:
+
+```text
 Client: [PERSON_GDPR], Location: [LOCATION_GDPR], IBAN: [IBAN_REDACTED]
 ```
 
-## 👨‍💻 Author
-**Osman Kaan Kars**  
-Cybersecurity Engineer | Privacy Engineering Enthusiast  
+## Tests
 
-Connect with me on LinkedIn for specialized DACH region security projects.
+```bash
+python -m unittest discover -s tests -v
+```
+
+The unit suite injects a deterministic NLP boundary and checks the supported regex patterns, named-entity replacement, file processing, CLI failure status, and PDF output naming. CI runs these core checks without downloading the large language model.
+
+## Privacy and compliance limits
+
+The project name describes its learning goal; using this program does **not** establish GDPR/DSGVO compliance or guarantee anonymization.
+
+- Regex and statistical NER can produce false positives and false negatives.
+- The supported patterns cover only a small subset of personal-data formats and do not cover the full DACH region.
+- Replacing names and locations does not address re-identification through context or linked datasets.
+- Extracted PDF text can omit scanned content, annotations, form fields, images, and layout-dependent meaning.
+- Always review output manually and perform an appropriate legal, privacy, and risk assessment before processing real personal data.
+- Test with synthetic data first; do not send sensitive documents to unapproved environments.
+
+## Author
+
+Osman Kaan Kars — Senior Cybersecurity Engineer at SchutzOn

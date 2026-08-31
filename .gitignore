@@ -1,0 +1,19 @@
+# Python environments and caches
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Generated redaction output
+redacted_*
+
+# Build and editor artifacts
+build/
+dist/
+*.egg-info/
+.DS_Store
+.idea/
+.vscode/
