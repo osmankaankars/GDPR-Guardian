@@ -1,8 +1,8 @@
 # GDPR Guardian
 
-> A Python proof of concept for finding and replacing selected identifiers in German-language text.
+> A Python proof of concept for best-effort detection and redaction of selected identifiers in German-language text.
 
-![Python](https://img.shields.io/badge/Python-3.11%2B-blue)
+![Python](https://img.shields.io/badge/Python-3.11-blue)
 ![NLP](https://img.shields.io/badge/NLP-spaCy-green)
 ![CI](https://github.com/osmankaankars/GDPR-Guardian/actions/workflows/ci.yml/badge.svg)
 
@@ -42,7 +42,7 @@ python anonymizer.py kunde_wien.txt
 
 `kunde_wien.txt` is a synthetic fixture for local demonstration.
 
-For text input, the result is written to `redacted_<input-name>`. For PDF input, extracted and redacted text is written to `redacted_<input-stem>.txt`.
+For text input, the result is written to `redacted_<input-name>`. For PDF input, extracted and redacted text is written to `redacted_<input-stem>.txt`. Output is created in the current working directory rather than beside the source file. An existing file with the same generated name can be overwritten, so use a separate working directory for important data.
 
 Example input:
 
@@ -62,19 +62,16 @@ Client: [PERSON_GDPR], Location: [LOCATION_GDPR], IBAN: [IBAN_REDACTED]
 python -m unittest discover -s tests -v
 ```
 
-The unit suite injects a deterministic NLP boundary and checks the supported regex patterns, named-entity replacement, file processing, CLI failure status, and PDF output naming. CI runs these core checks without downloading the large language model.
+The unit suite injects a deterministic NLP boundary and checks the supported regex patterns, named-entity replacement, file processing, CLI failure status, and PDF output naming. CI runs these core checks without downloading the large language model; it is not a full smoke test of the spaCy model or PDF runtime.
 
 ## Privacy and compliance limits
 
 The project name describes its learning goal; using this program does **not** establish GDPR/DSGVO compliance or guarantee anonymization.
 
 - Regex and statistical NER can produce false positives and false negatives.
+- Detected person and location text is replaced by value throughout the document. Identical text outside the detected context can therefore also be replaced.
 - The supported patterns cover only a small subset of personal-data formats and do not cover the full DACH region.
 - Replacing names and locations does not address re-identification through context or linked datasets.
 - Extracted PDF text can omit scanned content, annotations, form fields, images, and layout-dependent meaning.
 - Always review output manually and perform an appropriate legal, privacy, and risk assessment before processing real personal data.
 - Test with synthetic data first; do not send sensitive documents to unapproved environments.
-
-## Author
-
-Osman Kaan Kars — Senior Cybersecurity Engineer at SchutzOn
